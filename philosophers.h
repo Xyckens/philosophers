@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILOSOPHERS
-# define PHILOSOPHERS
+#ifndef PHILOSOPHERS_H
+# define PHILOSOPHERS_H
 
 # include <unistd.h>
 # include <stdlib.h>
@@ -20,7 +20,7 @@
 # include <sys/time.h>
 # include <pthread.h>
 
-typedef	struct	s_philo
+typedef struct s_philo
 {
 	int			nbr_philo;
 	int			ttd;
@@ -28,9 +28,23 @@ typedef	struct	s_philo
 	int			tts;
 	int			forks;
 	int			nbr_eat;
-	pthread_t	*threadID;
+	pthread_t	*thread_id;
+	pthread_mutex_t	*forkstate;
 }				t_philo;
 
+typedef struct s_indiv
+{
+	pthread_t 		thread_id;
+	int				nbr_philo;
+	pthread_mutex_t	fork_R;
+	pthread_mutex_t	fork_L;
+	struct timeval	time_eaten;
+	struct s_indiv	*next;
+}				t_indiv;
+
 int	ft_atoi(const char *nptr);
+
+void	sleeping(t_philo *philo, struct timeval begin, int nphil);
+void	eating(t_philo *philo, struct timeval begin, int nphil);
 
 #endif

@@ -14,10 +14,11 @@ NAME = philo
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread
 
 SRC = main.c \
-		auxil.c
+		auxil.c \
+		think_sleep.c
 
 OBJ = $(SRC:.c=.o)
 
