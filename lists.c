@@ -59,6 +59,26 @@ t_indiv	*connectthem(t_philo *philo, struct timeval teatn)
 	return (indiv);
 }
 
+void	freelst(t_indiv **indiv)
+{
+	t_indiv	*sublst;
+	t_indiv	*next;
+
+	if (!indiv)
+		return ;
+	sublst = *indiv;
+	while (sublst)
+	{
+		next = sublst->next;
+		pthread_mutex_destroy(&sublst->fork_L);
+		pthread_detach(sublst->thread_id);
+		free(sublst);
+		sublst->next = NULL;
+		sublst = next;
+	}
+	*indiv = NULL;
+}
+
 void	printstats(t_indiv *indiv, int len)
 {
 	int	temp;

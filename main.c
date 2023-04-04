@@ -66,6 +66,20 @@ void	philoindv_init(t_philo *philo, t_indiv *indiv, int pos)
 
 }
 
+t_indiv	*rightfork(t_indiv *indiv, t_philo *philo)
+{
+	int	temp;
+	t_indiv	*lst;
+
+	lst = indiv;
+	temp = 0;
+	while (temp++ < philo->nbr_philo - 2)
+		indiv = indiv->next;
+	indiv->fork_R = philo->forkstate[0];
+	indiv = lst;
+	return (indiv);
+}
+
 int	main(int argc, char **argv)
 {
 	t_philo	philo;
@@ -91,8 +105,10 @@ int	main(int argc, char **argv)
 			sleeping(&philo, begin, temp);
 			usleep(1);
 		}
+		indiv = rightfork(indiv, &philo);
 		printstats(indiv, philo.nbr_philo);
 		//detach_this(&philo, temp);
+		//freelst(&indiv);
 	}
 	else
 		printf("not enough args\n");

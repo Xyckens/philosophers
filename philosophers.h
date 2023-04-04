@@ -47,6 +47,7 @@ void	printstats(t_indiv *indiv, int len);
 
 
 t_indiv	*connectthem(t_philo *philo, struct timeval teatn);
+void	freelst(t_indiv **indiv);
 
 void	sleeping(t_philo *philo, struct timeval begin, int nphil);
 void	eating(t_philo *philo, struct timeval begin, int nphil);
