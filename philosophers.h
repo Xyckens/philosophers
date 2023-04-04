@@ -42,7 +42,11 @@ typedef struct s_indiv
 	struct s_indiv	*next;
 }				t_indiv;
 
-int	ft_atoi(const char *nptr);
+int		ft_atoi(const char *nptr);
+void	printstats(t_indiv *indiv, int len);
+
+
+t_indiv	*connectthem(t_philo *philo, struct timeval teatn);
 
 void	sleeping(t_philo *philo, struct timeval begin, int nphil);
 void	eating(t_philo *philo, struct timeval begin, int nphil);

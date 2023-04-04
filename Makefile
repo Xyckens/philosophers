@@ -6,7 +6,7 @@
 #    By: fvieira <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/29 14:42:53 by fvieira           #+#    #+#              #
-#    Updated: 2023/03/29 14:42:55 by fvieira          ###   ########.fr        #
+#    Updated: 2023/04/03 20:58:29 by fvieira          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,8 @@ CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread
 
 SRC = main.c \
 		auxil.c \
-		think_sleep.c
+		think_sleep.c \
+		lists.c
 
 OBJ = $(SRC:.c=.o)
 

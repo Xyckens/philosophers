@@ -54,13 +54,22 @@ void foo()
 
 void	philoindv_init(t_philo *philo, t_indiv *indiv, int pos)
 {
+	int	temp;
+
+	temp = pos;
+	while (temp-- > 1 && indiv != NULL)
+		indiv = indiv->next;
+	indiv->thread_id = philo->thread_id[pos];
+	indiv->fork_L = philo->forkstate[pos];
+	if (pos != philo->nbr_philo - 1)
+		indiv->fork_R = philo->forkstate[pos + 1];
 
 }
 
 int	main(int argc, char **argv)
 {
 	t_philo	philo;
-	t_indiv	indiv;
+	t_indiv	*indiv;
 	int temp;
 	struct timeval begin;
 
@@ -73,14 +82,16 @@ int	main(int argc, char **argv)
 			philo.nbr_eat = -1;
 		temp = philo.nbr_philo;
 		gettimeofday(&begin, NULL);
-		while (philo.nbr_philo-- > 1)
+		indiv = connectthem(&philo, begin);
+		while (temp-- > 1)
 		{
 			pthread_create(&philo.thread_id[temp], NULL, &func, &philo);
 			pthread_mutex_init(&philo.forkstate[temp], NULL);
-			philoindv_init(&philo, &indiv, temp);
-			sleeping(&philo, begin, philo.nbr_philo);
+			philoindv_init(&philo, indiv, temp);
+			sleeping(&philo, begin, temp);
 			usleep(1);
 		}
+		printstats(indiv, philo.nbr_philo);
 		//detach_this(&philo, temp);
 	}
 	else
