@@ -32,17 +32,6 @@ void	*func(void *arg)
 	return (NULL);
 }
 
-/*void	detach_this(pthread_t *threads, int temp)
-{
-		while (temp-- > 0)
-		{
-			printf("threads %lu\n", philo->threads[temp]);
-			pthread_detach(philo->threads[temp]);
-			pthread_mutex_destroy(philo->forkstate[temp]);
-			usleep(10);
-		}
-}*/
-
 /*
 void foo()
 {
@@ -106,9 +95,10 @@ int	main(int argc, char **argv)
 			usleep(1);
 		}
 		indiv = rightfork(indiv, &philo);
-		printstats(indiv, philo.nbr_philo);
-		//detach_this(&philo, temp);
-		//freelst(&indiv);
+		//printstats(indiv, philo.nbr_philo);
+		free(philo.thread_id);
+		free(philo.forkstate);
+		freelst(&indiv, philo.nbr_philo);
 	}
 	else
 		printf("not enough args\n");

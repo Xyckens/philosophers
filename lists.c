@@ -59,21 +59,23 @@ t_indiv	*connectthem(t_philo *philo, struct timeval teatn)
 	return (indiv);
 }
 
-void	freelst(t_indiv **indiv)
+void	freelst(t_indiv **indiv, int max)
 {
 	t_indiv	*sublst;
 	t_indiv	*next;
+	int		c;
 
 	if (!indiv)
 		return ;
 	sublst = *indiv;
-	while (sublst)
+	c = 0;
+	while (++c < max)
 	{
 		next = sublst->next;
 		pthread_mutex_destroy(&sublst->fork_L);
 		pthread_detach(sublst->thread_id);
-		free(sublst);
 		sublst->next = NULL;
+		free(sublst);
 		sublst = next;
 	}
 	*indiv = NULL;
