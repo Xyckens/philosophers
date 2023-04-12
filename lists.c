@@ -12,15 +12,15 @@
 
 #include "philosophers.h"
 
-t_indiv	*new(t_philo *philo, int i, struct timeval time_eaten)
+t_indiv	*new(int i, struct timeval time_eaten)
 {
 	t_indiv	*indiv;
 
-	(void)philo;
 	indiv = (t_indiv *) malloc(sizeof(t_indiv));
 	indiv->nbr_philo = i;
 	indiv->time_eaten = time_eaten;
 	indiv->next = NULL;
+	indiv->nbr_eaten = 0;
 	return (indiv);
 }
 
@@ -46,11 +46,11 @@ t_indiv	*connectthem(t_philo *philo, struct timeval teatn)
 	t_indiv	*indiv;
 
 	c = 1;
-	indiv = new(philo, c, teatn);
+	indiv = new(c, teatn);
 	temp = indiv;
 	while (c++ < philo->nbr_philo - 1)
 	{
-		lstadd_back(&indiv, new(philo, c, teatn));
+		lstadd_back(&indiv, new(c, teatn));
 	}
 	while (indiv->next != NULL)
 		indiv = indiv->next;
@@ -72,8 +72,8 @@ void	freelst(t_indiv **indiv, int max)
 	while (++c < max)
 	{
 		next = sublst->next;
-		pthread_mutex_destroy(&sublst->fork_L);
-		pthread_detach(sublst->thread_id);
+		//pthread_mutex_destroy(&sublst->fork_L);
+		//pthread_detach(sublst->thread_id);
 		sublst->next = NULL;
 		free(sublst);
 		sublst = next;

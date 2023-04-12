@@ -12,20 +12,34 @@
 
 #include "philosophers.h"
 
-void	sleeping(t_philo *philo, struct timeval begin, int nphil)
+void	sleeping(t_both *both)
 {
 	struct timeval now;
 
-	usleep(philo->tts);
+	usleep(both->philo->tts);
 	gettimeofday(&now, NULL);
-	printf("%ld ms %d is 😴😴😴\n", (now.tv_usec - begin.tv_usec)/100, nphil);
+	printf("%ld ms ", (now.tv_usec - both->philo->begin.tv_usec)/100);
+	printf("%d is 😴😴😴\n", both->indiv->nbr_philo);
+
 }
 
-void	eating(t_philo *philo, struct timeval begin, int nphil)
+int	eating(t_both *both)
 {
 	struct timeval now;
 
-	usleep(philo->tte);
 	gettimeofday(&now, NULL);
-	printf("%ld %d is 😫🍝😫🍝\n", now.tv_usec - begin.tv_usec, nphil);
+	if (both->indiv->time_eaten.tv_sec - now.tv_sec > 1)
+	{
+		printf("%ld %d is 💀💀💀💀\n", now.tv_usec - both->philo->begin.tv_usec, both->indiv->nbr_philo);
+		return (1);
+	}
+	if (both->philo->ttd > both->indiv->time_eaten.tv_usec - now.tv_usec)
+	{
+		printf("%ld %d is 💀💀💀💀\n", now.tv_usec - both->philo->begin.tv_usec, both->indiv->nbr_philo);
+		return (1);
+	}
+	both->indiv->time_eaten = now;
+	printf("%ld %d is 😫🍝😫🍝\n", now.tv_usec - both->philo->begin.tv_usec, both->indiv->nbr_philo);
+	usleep(both->philo->tte);
+	return (0);
 }

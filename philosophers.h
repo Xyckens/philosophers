@@ -22,14 +22,15 @@
 
 typedef struct s_philo
 {
-	int			nbr_philo;
-	int			ttd;
-	int			tte;
-	int			tts;
-	int			forks;
-	int			nbr_eat;
-	pthread_t	*thread_id;
+	int				nbr_philo;
+	int				ttd;
+	int				tte;
+	int				tts;
+	int				forks;
+	int				nbr_eat;
+	pthread_t		*thread_id;
 	pthread_mutex_t	*forkstate;
+	struct timeval	begin;
 }				t_philo;
 
 typedef struct s_indiv
@@ -39,8 +40,15 @@ typedef struct s_indiv
 	pthread_mutex_t	fork_R;
 	pthread_mutex_t	fork_L;
 	struct timeval	time_eaten;
+	int				nbr_eaten;
 	struct s_indiv	*next;
 }				t_indiv;
+
+typedef struct s_both
+{
+	t_philo	*philo;
+	t_indiv	*indiv;
+}				t_both;
 
 int		ft_atoi(const char *nptr);
 void	printstats(t_indiv *indiv, int len);
@@ -49,7 +57,7 @@ void	printstats(t_indiv *indiv, int len);
 t_indiv	*connectthem(t_philo *philo, struct timeval teatn);
 void	freelst(t_indiv **indiv, int max);
 
-void	sleeping(t_philo *philo, struct timeval begin, int nphil);
-void	eating(t_philo *philo, struct timeval begin, int nphil);
+void	sleeping(t_both *both);
+int		eating(t_both *both);
 
 #endif
