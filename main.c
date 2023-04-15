@@ -28,33 +28,38 @@ void	mutex_changestate(t_both *both, char state)
 {
 	if (state == 'l')
 	{
-		pthread_mutex_lock(&both->indiv->fork_R);
-		pthread_mutex_lock(&both->indiv->fork_L);
+		if(pthread_mutex_lock(&both->indiv->fork_R) != 0)
+			printf("merda\n");
+		if(pthread_mutex_lock(&both->indiv->fork_L) != 0)
+			printf("merda\n");
+		//printf("lock\n");
 	}
 	else if (state == 'u')
 	{
-		pthread_mutex_unlock(&both->indiv->fork_R);
-		pthread_mutex_unlock(&both->indiv->fork_L);
+		if(pthread_mutex_unlock(&both->indiv->fork_R) != 0)
+			printf("merda\n");
+		if(pthread_mutex_unlock(&both->indiv->fork_L) != 0)
+			printf("merda\n");
+		//printf("unlock\n");
 	}
 }
 
 void	*func(void *arg)
 {
 	t_both *both;
-	int		death_flag;
 
 	both = (t_both *)arg;
-	death_flag = 0;
-	printf("numero do philo %d\n", both->indiv->nbr_philo);
-	while (death_flag == 0 && both->indiv->nbr_eaten != 0)
+	//printf("numero do philo %d\n", both->indiv->nbr_philo);
+	while (both->indiv->is_dead == 0 && both->indiv->nbr_eaten != 0)
 	{
+		printf("deaths %d\n", any_death(both));
+		if (any_death(both) == 1)
+			break ;
 		mutex_changestate(both, 'l');
-		death_flag = eating(both);
+		eating(both);
 		mutex_changestate(both, 'u');
 		sleeping(both);
-		printf("death %d\n", death_flag);
 	}
-	printf("ola\n");
 	//printf("ainda nao vi timestamp, philo nbr %d\n", philo->nbr_philo);
 	return (NULL);
 }
@@ -121,7 +126,7 @@ int	main(int argc, char **argv)
 		while (++temp < both.philo->nbr_philo)
 		{
 			pthread_create(&both.philo->thread_id[temp], NULL, &func, &both);
-			printf("nbr %d \n",both.indiv->nbr_philo);
+			//printf("nbr %d \n",both.indiv->nbr_philo);
 			both.indiv = both.indiv->next;
 			usleep(300);
 		}

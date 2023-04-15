@@ -19,7 +19,8 @@ CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread -g
 SRC = main.c \
 		auxil.c \
 		think_sleep.c \
-		lists.c
+		lists.c \
+		death.c
 
 OBJ = $(SRC:.c=.o)
 

@@ -34,13 +34,11 @@ void	sleeping(t_both *both)
 	usleep(both->philo->tts * 1000);
 	gettimeofday(&now, NULL);
 	//printf("merdaaaaaaaaaindiv %d\n", both->indiv->nbr_philo);
-	printf("%ld ms ", mytime(both->philo->begin));
-
-	printf("%d is 😴😴😴\n", both->indiv->nbr_philo);
+	printf("%ld ms %d is 😴😴😴😴\n", mytime(both->philo->begin), both->indiv->nbr_philo);
 
 }
 
-int	eating(t_both *both)
+void	eating(t_both *both)
 {
 	struct timeval now;
 
@@ -48,16 +46,16 @@ int	eating(t_both *both)
 	/*if (both->indiv->time_eaten.tv_sec - now.tv_sec > 1)
 	{
 		printf("%ld %d is 💀💀💀💀\n", time(both->philo->begin), both->indiv->nbr_philo);
-		return (1);
+		both->indiv->is_dead = 1;
 	}*/
 	if (both->philo->ttd < both->indiv->time_eaten.tv_usec - now.tv_usec)
 	{
 		printf("%ld ms %d is 💀💀💀💀\n", mytime(both->philo->begin), both->indiv->nbr_philo);
-		return (1);
+		both->indiv->is_dead = 1;
 	}
 	both->indiv->time_eaten = now;
 	both->indiv->nbr_eaten--;
 	printf("%ld ms %d is 😫🍝😫🍝\n", mytime(both->philo->begin), both->indiv->nbr_philo);
 	usleep(both->philo->tte * 1000);
-	return (0);
+	//return (0);
 }

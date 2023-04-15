@@ -40,6 +40,7 @@ typedef struct s_indiv
 	pthread_mutex_t	fork_L;
 	struct timeval	time_eaten;
 	int				nbr_eaten;
+	int				is_dead;
 	struct s_indiv	*next;
 }				t_indiv;
 
@@ -57,6 +58,7 @@ t_indiv	*connectthem(t_philo *philo, struct timeval teatn);
 void	freelst(t_both *both);
 
 void	sleeping(t_both *both);
-int		eating(t_both *both);
+void	eating(t_both *both);
 
+int		any_death(t_both *both);
 #endif

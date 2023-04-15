@@ -21,6 +21,7 @@ t_indiv	*new(int i, struct timeval time_eaten, int nbr_eat)
 	indiv->time_eaten = time_eaten;
 	indiv->next = NULL;
 	indiv->nbr_eaten = nbr_eat;
+	indiv->is_dead = 0;
 	return (indiv);
 }
 
