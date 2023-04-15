@@ -12,7 +12,7 @@
 
 #include "philosophers.h"
 
-t_indiv	*new(int i, struct timeval time_eaten)
+t_indiv	*new(int i, struct timeval time_eaten, int nbr_eat)
 {
 	t_indiv	*indiv;
 
@@ -20,7 +20,7 @@ t_indiv	*new(int i, struct timeval time_eaten)
 	indiv->nbr_philo = i;
 	indiv->time_eaten = time_eaten;
 	indiv->next = NULL;
-	indiv->nbr_eaten = 0;
+	indiv->nbr_eaten = nbr_eat;
 	return (indiv);
 }
 
@@ -46,11 +46,11 @@ t_indiv	*connectthem(t_philo *philo, struct timeval teatn)
 	t_indiv	*indiv;
 
 	c = 1;
-	indiv = new(c, teatn);
+	indiv = new(c, teatn, philo->nbr_eat);
 	temp = indiv;
 	while (c++ < philo->nbr_philo - 1)
 	{
-		lstadd_back(&indiv, new(c, teatn));
+		lstadd_back(&indiv, new(c, teatn, philo->nbr_eat));
 	}
 	while (indiv->next != NULL)
 		indiv = indiv->next;
@@ -59,26 +59,28 @@ t_indiv	*connectthem(t_philo *philo, struct timeval teatn)
 	return (indiv);
 }
 
-void	freelst(t_indiv **indiv, int max)
+void	freelst(t_both *both)
 {
 	t_indiv	*sublst;
 	t_indiv	*next;
 	int		c;
 
-	if (!indiv)
+	if (!both->indiv)
 		return ;
-	sublst = *indiv;
+	sublst = both->indiv;
 	c = 0;
-	while (++c < max)
+	while (++c < both->philo->nbr_philo)
 	{
 		next = sublst->next;
-		//pthread_mutex_destroy(&sublst->fork_L);
-		//pthread_detach(sublst->thread_id);
+		pthread_join(both->philo->thread_id[c], NULL);
+		pthread_detach(both->philo->thread_id[c]);
+		pthread_mutex_destroy(&sublst->fork_L);
 		sublst->next = NULL;
-		free(sublst);
+		//free(both->indiv);
 		sublst = next;
 	}
-	*indiv = NULL;
+	//pthread_detach(both->philo->thread_id[c - 1]);
+	both->indiv = NULL;
 }
 
 void	printstats(t_indiv *indiv, int len)
@@ -89,7 +91,6 @@ void	printstats(t_indiv *indiv, int len)
 	while (temp-- > 1 && indiv != NULL)
 	{
 		printf("nbr %d\n", indiv->nbr_philo);
-		printf("thread %lu\n", indiv->thread_id);
 		//printf("fork direito  %p\n", indiv->fork_R);
 		//printf("fork esquerdo %p\n", indiv->fork_L);
 		indiv = indiv->next;

@@ -14,6 +14,7 @@
 
 void	philostruct_init(t_both *both, char **argv)
 {
+	both->philo =  malloc(sizeof(t_philo));
 	both->philo->nbr_philo = ft_atoi(argv[1]) + 1;
 	both->philo->ttd = ft_atoi(argv[2]);
 	both->philo->tte = ft_atoi(argv[3]);
@@ -23,12 +24,37 @@ void	philostruct_init(t_both *both, char **argv)
 	both->philo->forkstate = malloc(both->philo->nbr_philo * sizeof(pthread_mutex_t));
 }
 
+void	mutex_changestate(t_both *both, char state)
+{
+	if (state == 'l')
+	{
+		pthread_mutex_lock(&both->indiv->fork_R);
+		pthread_mutex_lock(&both->indiv->fork_L);
+	}
+	else if (state == 'u')
+	{
+		pthread_mutex_unlock(&both->indiv->fork_R);
+		pthread_mutex_unlock(&both->indiv->fork_L);
+	}
+}
+
 void	*func(void *arg)
 {
 	t_both *both;
+	int		death_flag;
 
-	both = arg;
-	sleeping(both);
+	both = (t_both *)arg;
+	death_flag = 0;
+	printf("numero do philo %d\n", both->indiv->nbr_philo);
+	while (death_flag == 0 && both->indiv->nbr_eaten != 0)
+	{
+		mutex_changestate(both, 'l');
+		death_flag = eating(both);
+		mutex_changestate(both, 'u');
+		sleeping(both);
+		printf("death %d\n", death_flag);
+	}
+	printf("ola\n");
 	//printf("ainda nao vi timestamp, philo nbr %d\n", philo->nbr_philo);
 	return (NULL);
 }
@@ -49,7 +75,6 @@ void	philoindv_init(t_both *both, int pos)
 	temp = pos;
 	while (temp-- > 1 && both->indiv != NULL)
 		both->indiv = both->indiv->next;
-	//both->indiv->thread_id = both->philo->thread_id[pos];
 	both->indiv->fork_L = both->philo->forkstate[pos];
 	if (pos != both->philo->nbr_philo - 1)
 		both->indiv->fork_R = both->philo->forkstate[pos + 1];
@@ -59,53 +84,52 @@ void	philoindv_init(t_both *both, int pos)
 t_indiv	*rightfork(t_both *both)
 {
 	int	temp;
-	t_indiv	*lst;
 
-	lst = both->indiv;
 	temp = 0;
 	while (temp++ < both->philo->nbr_philo - 2)
 		both->indiv = both->indiv->next;
 	both->indiv->fork_R = both->philo->forkstate[0];
-	both->indiv = lst;
+	while (both->indiv->nbr_philo != 1)
+		both->indiv = both->indiv->next;
 	return (both->indiv);
 }
 
 int	main(int argc, char **argv)
 {
-	t_both *both;
+	t_both both;
 	int temp;
 	struct timeval begin;
 
-	both = NULL;
 	if (argc >= 5)
 	{
-		philostruct_init(both, argv);
+		philostruct_init(&both, argv);
 		if (argc >= 6)
-			both->philo->nbr_eat = ft_atoi(argv[5]);
+			both.philo->nbr_eat = ft_atoi(argv[5]);
 		else
-			both->philo->nbr_eat = -1;
-		temp = both->philo->nbr_philo;
+			both.philo->nbr_eat = -1;
+		temp = both.philo->nbr_philo;
 		gettimeofday(&begin, NULL);
-		both->philo->begin = begin;
-		both->indiv = connectthem(both->philo, begin);
+		both.philo->begin = begin;
+		both.indiv = connectthem(both.philo, begin);
 		while (temp-- > 1)
 		{
-			pthread_mutex_init(&both->philo->forkstate[temp], NULL);
-			philoindv_init(both, temp);
+			pthread_mutex_init(&both.philo->forkstate[temp], NULL);
+			philoindv_init(&both, temp);
 		}
-		both->indiv = rightfork(both);
-		temp = both->philo->nbr_philo;
-		while (temp-- > 1)
+		both.indiv = rightfork(&both);
+		temp = 0;
+		while (++temp < both.philo->nbr_philo)
 		{
-			printf("temp%d\n",temp);
-			pthread_create(&both->philo->thread_id[temp], NULL, &func, both);
-			both->indiv = both->indiv->next;
-			usleep(1);
+			pthread_create(&both.philo->thread_id[temp], NULL, &func, &both);
+			printf("nbr %d \n",both.indiv->nbr_philo);
+			both.indiv = both.indiv->next;
+			usleep(300);
 		}
+
 		//printstats(indiv, philo.nbr_philo);
-		free(both->philo->thread_id);
-		free(both->philo->forkstate);
-		freelst(&both->indiv, both->philo->nbr_philo);
+		freelst(&both);
+		free(both.philo->thread_id);
+		free(both.philo->forkstate);
 	}
 	else
 		printf("not enough args\n");

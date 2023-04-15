@@ -35,7 +35,6 @@ typedef struct s_philo
 
 typedef struct s_indiv
 {
-	pthread_t 		thread_id;
 	int				nbr_philo;
 	pthread_mutex_t	fork_R;
 	pthread_mutex_t	fork_L;
@@ -55,7 +54,7 @@ void	printstats(t_indiv *indiv, int len);
 
 
 t_indiv	*connectthem(t_philo *philo, struct timeval teatn);
-void	freelst(t_indiv **indiv, int max);
+void	freelst(t_both *both);
 
 void	sleeping(t_both *both);
 int		eating(t_both *both);
