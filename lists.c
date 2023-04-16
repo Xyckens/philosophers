@@ -50,9 +50,7 @@ t_indiv	*connectthem(t_philo *philo, struct timeval teatn)
 	indiv = new(c, teatn, philo->nbr_eat);
 	temp = indiv;
 	while (c++ < philo->nbr_philo - 1)
-	{
 		lstadd_back(&indiv, new(c, teatn, philo->nbr_eat));
-	}
 	while (indiv->next != NULL)
 		indiv = indiv->next;
 	indiv->next = temp;
@@ -69,8 +67,8 @@ void	freelst(t_both *both)
 	if (!both->indiv)
 		return ;
 	sublst = both->indiv;
-	c = 0;
-	while (++c < both->philo->nbr_philo)
+	c = -1;
+	while (++c < both->philo->nbr_philo - 1)
 	{
 		next = sublst->next;
 		pthread_join(both->philo->thread_id[c], NULL);

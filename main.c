@@ -49,54 +49,38 @@ void	*func(void *arg)
 	t_both *both;
 
 	both = (t_both *)arg;
-	//printf("numero do philo %d\n", both->indiv->nbr_philo);
+	printf("numero do philo %d\n", both->indiv->nbr_philo);
 	while (both->indiv->is_dead == 0 && both->indiv->nbr_eaten != 0)
 	{
-		printf("deaths %d\n", any_death(both));
 		if (any_death(both) == 1)
+		{
+			printf("deaths %d\n", any_death(both));
 			break ;
+		}
 		mutex_changestate(both, 'l');
 		eating(both);
+		printf("deaths %d\n", any_death(both));
 		mutex_changestate(both, 'u');
 		sleeping(both);
 	}
-	//printf("ainda nao vi timestamp, philo nbr %d\n", philo->nbr_philo);
 	return (NULL);
 }
 
-/*
-void foo()
-{
-    pthread_mutex_lock(&foo_mutex);
-   // Do work.
-    pthread_mutex_unlock(&foo_mutex);
-}
-*/
-
 void	philoindv_init(t_both *both, int pos)
 {
-	int	temp;
-
-	temp = pos;
-	while (temp-- > 1 && both->indiv != NULL)
-		both->indiv = both->indiv->next;
-	both->indiv->fork_L = both->philo->forkstate[pos];
-	if (pos != both->philo->nbr_philo - 1)
-		both->indiv->fork_R = both->philo->forkstate[pos + 1];
-
+	both->indiv->fork_R = both->philo->forkstate[pos];
+	if (pos != 1)
+		both->indiv->fork_L = both->philo->forkstate[pos - 1];
 }
 
-t_indiv	*rightfork(t_both *both)
+void	leftfork(t_both *both)
 {
 	int	temp;
 
 	temp = 0;
-	while (temp++ < both->philo->nbr_philo - 2)
-		both->indiv = both->indiv->next;
-	both->indiv->fork_R = both->philo->forkstate[0];
 	while (both->indiv->nbr_philo != 1)
 		both->indiv = both->indiv->next;
-	return (both->indiv);
+	both->indiv->fork_L = both->philo->forkstate[both->philo->nbr_philo - 2];
 }
 
 int	main(int argc, char **argv)
@@ -112,25 +96,25 @@ int	main(int argc, char **argv)
 			both.philo->nbr_eat = ft_atoi(argv[5]);
 		else
 			both.philo->nbr_eat = -1;
-		temp = both.philo->nbr_philo;
 		gettimeofday(&begin, NULL);
 		both.philo->begin = begin;
 		both.indiv = connectthem(both.philo, begin);
-		while (temp-- > 1)
+		temp = -1;
+		while (++temp < both.philo->nbr_philo - 1)
 		{
 			pthread_mutex_init(&both.philo->forkstate[temp], NULL);
-			philoindv_init(&both, temp);
-		}
-		both.indiv = rightfork(&both);
-		temp = 0;
-		while (++temp < both.philo->nbr_philo)
-		{
-			pthread_create(&both.philo->thread_id[temp], NULL, &func, &both);
-			//printf("nbr %d \n",both.indiv->nbr_philo);
+			philoindv_init(&both, temp + 1);
 			both.indiv = both.indiv->next;
-			usleep(300);
 		}
-
+		leftfork(&both);
+		temp = -1;
+		while (++temp < both.philo->nbr_philo - 1)
+		{
+			usleep(3000);
+			printf("nbr %d \n",both.indiv->nbr_philo);
+			pthread_create(&both.philo->thread_id[temp], NULL, &func, &both);
+			both.indiv = both.indiv->next;
+		}
 		//printstats(indiv, philo.nbr_philo);
 		freelst(&both);
 		free(both.philo->thread_id);
