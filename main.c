@@ -49,20 +49,22 @@ void	*func(void *arg)
 	t_both *both;
 
 	both = (t_both *)arg;
-	printf("numero do philo %d\n", both->indiv->nbr_philo);
-	while (both->indiv->is_dead == 0 && both->indiv->nbr_eaten != 0)
-	{
+	printf("reentrou\n");
+	//while (both->indiv->is_dead == 0 && both->indiv->nbr_eaten != 0)
+	//{
 		if (any_death(both) == 1)
 		{
 			printf("deaths %d\n", any_death(both));
-			break ;
+			//break ;
 		}
 		mutex_changestate(both, 'l');
 		eating(both);
 		printf("deaths %d\n", any_death(both));
+		printf("deaths %d\n", both->indiv->is_dead);
+
 		mutex_changestate(both, 'u');
 		sleeping(both);
-	}
+	//}
 	return (NULL);
 }
 
@@ -110,9 +112,9 @@ int	main(int argc, char **argv)
 		temp = -1;
 		while (++temp < both.philo->nbr_philo - 1)
 		{
-			usleep(3000);
 			printf("nbr %d \n",both.indiv->nbr_philo);
 			pthread_create(&both.philo->thread_id[temp], NULL, &func, &both);
+			usleep(3000);
 			both.indiv = both.indiv->next;
 		}
 		//printstats(indiv, philo.nbr_philo);

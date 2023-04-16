@@ -70,10 +70,10 @@ void	freelst(t_both *both)
 	c = -1;
 	while (++c < both->philo->nbr_philo - 1)
 	{
-		next = sublst->next;
 		pthread_join(both->philo->thread_id[c], NULL);
 		pthread_detach(both->philo->thread_id[c]);
 		pthread_mutex_destroy(&sublst->fork_L);
+		next = sublst->next;
 		sublst->next = NULL;
 		//free(both->indiv);
 		sublst = next;
