@@ -20,18 +20,6 @@
 # include <sys/time.h>
 # include <pthread.h>
 
-typedef struct s_philo
-{
-	int				nbr_philo;
-	int				ttd;
-	int				tte;
-	int				tts;
-	int				forks;
-	int				nbr_eat;
-	pthread_t		*thread_id;
-	pthread_mutex_t	*forkstate;
-	struct timeval	begin;
-}				t_philo;
 
 typedef struct s_indiv
 {
@@ -44,10 +32,25 @@ typedef struct s_indiv
 	struct s_indiv	*next;
 }				t_indiv;
 
+typedef struct s_philo
+{
+	int				nbr_philo;
+	int				ttd;
+	int				tte;
+	int				tts;
+	int				forks;
+	int				nbr_eat;
+	pthread_t		*thread_id;
+	pthread_mutex_t	*forkstate;
+	t_indiv			**indivarray;
+	struct timeval	begin;
+}				t_philo;
+
 typedef struct s_both
 {
 	t_philo	*philo;
 	t_indiv	*indiv;
+	int	nbr;
 }				t_both;
 
 int		ft_atoi(const char *nptr);

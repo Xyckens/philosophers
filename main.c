@@ -22,48 +22,53 @@ void	philostruct_init(t_both *both, char **argv)
 	both->philo->forks = both->philo->nbr_philo;
 	both->philo->thread_id = malloc((both->philo->nbr_philo) * sizeof(pthread_t));
 	both->philo->forkstate = malloc(both->philo->nbr_philo * sizeof(pthread_mutex_t));
+	both->philo->indivarray = malloc((both->philo->nbr_philo) * sizeof(t_indiv *));
+
 }
 
 void	mutex_changestate(t_both *both, char state)
 {
 	if (state == 'l')
 	{
-		printf("fork lock by %d\n", both->indiv->nbr_philo);
 		if(pthread_mutex_lock(&both->indiv->fork_R) != 0)
 			printf("merda\n");
 		if(pthread_mutex_lock(&both->indiv->fork_L) != 0)
 			printf("merda\n");
-		//printf("lock\n");
+		printf("fork lock by %d\n", both->indiv->nbr_philo);
 	}
 	else if (state == 'u')
 	{
-		printf("fork unlock by %d\n", both->indiv->nbr_philo);
-
 		if(pthread_mutex_unlock(&both->indiv->fork_R) != 0)
 			printf("merda\n");
 		if(pthread_mutex_unlock(&both->indiv->fork_L) != 0)
 			printf("merda\n");
-		//printf("unlock\n");
+		printf("fork unlock by %d\n", both->indiv->nbr_philo);
 	}
 }
 
 void	*func(void *arg)
 {
 	t_both *both;
+	int	temp;
 
 	both = (t_both *)arg;
-	both->indiv = both->indiv->next;
-	while (both->indiv->is_dead == 0 && both->indiv->nbr_eaten != 0)
-	{
-		if (any_death(both) == 1 || both->indiv->is_dead == 1)
-			break ;
-		mutex_changestate(both, 'l');
-		eating(both);
-		mutex_changestate(both, 'u');
-		if (any_death(both) == 1 || both->indiv->is_dead == 1)
-			break ;
-		sleeping(both);
-	}
+	temp = both->number;
+	printf("temp %d\n", temp);
+	//both->indiv = both->indiv->next;
+	//while (both->philo->indivarray[temp - 1]->is_dead == 0 && both->philo->indivarray[temp - 1]->nbr_eaten != 0)
+	//{
+	//	if (any_death(both) == 1 || both->philo->indivarray[temp - 1]->is_dead == 1)
+		//	break ;
+
+		printf("a fork lock by %d\n", both->philo->indivarray[temp - 1]->nbr_philo);
+		//mutex_changestate(both, 'l');
+		//eating(both);
+		printf("a fork unlock by %d\n", both->philo->indivarray[temp - 1]->nbr_philo);
+		//mutex_changestate(both, 'u');
+		//if (any_death(both) == 1 || both->philo->indivarray[temp - 1]->is_dead == 1)
+		//	break ;
+		//sleeping(both);
+	//}
 	return (NULL);
 }
 
@@ -124,6 +129,8 @@ int	main(int argc, char **argv)
 		temp = -1;
 		while (++temp < both.philo->nbr_philo - 1)
 		{
+			both.nbr = temp + 1;
+			printf("ola %d\n", temp + 1);
 			pthread_create(&both.philo->thread_id[temp], NULL, &func, &both);
 		}
 		freelst(&both);

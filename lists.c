@@ -55,6 +55,15 @@ t_indiv	*connectthem(t_philo *philo, struct timeval teatn)
 		indiv = indiv->next;
 	indiv->next = temp;
 	indiv = temp;
+	c = 0;
+	while (indiv->nbr_philo != philo->nbr_philo - 1)
+	{
+		philo->indivarray[c] = indiv;
+		c++;
+		indiv = indiv->next;
+	}
+	philo->indivarray[c] = indiv;
+	indiv = indiv->next;
 	return (indiv);
 }
 
@@ -80,18 +89,4 @@ void	freelst(t_both *both)
 	}
 	//pthread_detach(both->philo->thread_id[c - 1]);
 	both->indiv = NULL;
-}
-
-void	printstats(t_indiv *indiv, int len)
-{
-	int	temp;
-
-	temp = len;
-	while (temp-- > 1 && indiv != NULL)
-	{
-		printf("nbr %d\n", indiv->nbr_philo);
-		//printf("fork direito  %p\n", indiv->fork_R);
-		//printf("fork esquerdo %p\n", indiv->fork_L);
-		indiv = indiv->next;
-	}
 }
