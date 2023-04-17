@@ -28,6 +28,7 @@ void	mutex_changestate(t_both *both, char state)
 {
 	if (state == 'l')
 	{
+		printf("fork lock by %d\n", both->indiv->nbr_philo);
 		if(pthread_mutex_lock(&both->indiv->fork_R) != 0)
 			printf("merda\n");
 		if(pthread_mutex_lock(&both->indiv->fork_L) != 0)
@@ -36,6 +37,8 @@ void	mutex_changestate(t_both *both, char state)
 	}
 	else if (state == 'u')
 	{
+		printf("fork unlock by %d\n", both->indiv->nbr_philo);
+
 		if(pthread_mutex_unlock(&both->indiv->fork_R) != 0)
 			printf("merda\n");
 		if(pthread_mutex_unlock(&both->indiv->fork_L) != 0)
@@ -49,22 +52,18 @@ void	*func(void *arg)
 	t_both *both;
 
 	both = (t_both *)arg;
-	printf("reentrou\n");
-	//while (both->indiv->is_dead == 0 && both->indiv->nbr_eaten != 0)
-	//{
-		if (any_death(both) == 1)
-		{
-			printf("deaths %d\n", any_death(both));
-			//break ;
-		}
+	both->indiv = both->indiv->next;
+	while (both->indiv->is_dead == 0 && both->indiv->nbr_eaten != 0)
+	{
+		if (any_death(both) == 1 || both->indiv->is_dead == 1)
+			break ;
 		mutex_changestate(both, 'l');
 		eating(both);
-		printf("deaths %d\n", any_death(both));
-		printf("deaths %d\n", both->indiv->is_dead);
-
 		mutex_changestate(both, 'u');
+		if (any_death(both) == 1 || both->indiv->is_dead == 1)
+			break ;
 		sleeping(both);
-	//}
+	}
 	return (NULL);
 }
 
@@ -83,6 +82,18 @@ void	leftfork(t_both *both)
 	while (both->indiv->nbr_philo != 1)
 		both->indiv = both->indiv->next;
 	both->indiv->fork_L = both->philo->forkstate[both->philo->nbr_philo - 2];
+}
+
+void	printcorrectindiv(t_indiv *indiv)
+{
+	int	temp = indiv->nbr_philo;
+	printf("nbr philo %d\n", indiv->nbr_philo);
+	indiv = indiv->next;
+	while (temp != indiv->nbr_philo)
+	{
+		printf("nbr philo %d\n", indiv->nbr_philo);
+		indiv = indiv->next;
+	}
 }
 
 int	main(int argc, char **argv)
@@ -109,15 +120,12 @@ int	main(int argc, char **argv)
 			both.indiv = both.indiv->next;
 		}
 		leftfork(&both);
+		//printcorrectindiv(both.indiv);
 		temp = -1;
 		while (++temp < both.philo->nbr_philo - 1)
 		{
-			printf("nbr %d \n",both.indiv->nbr_philo);
 			pthread_create(&both.philo->thread_id[temp], NULL, &func, &both);
-			usleep(3000);
-			both.indiv = both.indiv->next;
 		}
-		//printstats(indiv, philo.nbr_philo);
 		freelst(&both);
 		free(both.philo->thread_id);
 		free(both.philo->forkstate);

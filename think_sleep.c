@@ -29,13 +29,8 @@ long	mytime(struct timeval begin)
 
 void	sleeping(t_both *both)
 {
-	struct timeval now;
-
-	gettimeofday(&now, NULL);
-	//printf("merdaaaaaaaaaindiv %d\n", both->indiv->nbr_philo);
 	printf("%ld ms %d is 😴😴😴😴\n", mytime(both->philo->begin), both->indiv->nbr_philo);
 	usleep(both->philo->tts * 1000);
-
 }
 
 void	eating(t_both *both)
