@@ -21,16 +21,6 @@
 # include <pthread.h>
 
 
-typedef struct s_indiv
-{
-	int				nbr_philo;
-	pthread_mutex_t	fork_R;
-	pthread_mutex_t	fork_L;
-	struct timeval	time_eaten;
-	int				nbr_eaten;
-	int				is_dead;
-	struct s_indiv	*next;
-}				t_indiv;
 
 typedef struct s_philo
 {
@@ -42,14 +32,26 @@ typedef struct s_philo
 	int				nbr_eat;
 	pthread_t		*thread_id;
 	pthread_mutex_t	*forkstate;
-	t_indiv			**indivarray;
 	struct timeval	begin;
 }				t_philo;
 
+typedef struct s_indiv
+{
+	int				nbr_philo;
+	pthread_mutex_t	fork_R;
+	pthread_mutex_t	fork_L;
+	t_philo			*philo;
+	struct timeval	time_eaten;
+	int				nbr_eaten;
+	int				is_dead;
+	struct s_indiv	*next;
+}				t_indiv;
+
 typedef struct s_both
 {
+	t_indiv	**indivarray;
 	t_philo	*philo;
-	t_indiv	*indiv;
+	//t_indiv	*indiv;
 	int	nbr;
 }				t_both;
 
@@ -57,11 +59,11 @@ int		ft_atoi(const char *nptr);
 void	printstats(t_indiv *indiv, int len);
 
 
-t_indiv	*connectthem(t_philo *philo, struct timeval teatn);
+t_indiv	**connectthem(t_both *begin, struct timeval teatn);
 void	freelst(t_both *both);
 
-void	sleeping(t_both *both);
-void	eating(t_both *both);
+void	sleeping(t_indiv *indiv);
+void	eating(t_indiv *indiv);
 
-int		any_death(t_both *both);
+int		any_death(t_indiv **indiv);
 #endif

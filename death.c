@@ -12,25 +12,23 @@
 
 #include "philosophers.h"
 
-int	any_death(t_both *both)
+int	any_death(t_indiv **indivarray)
 {
 	int	temp;
-	t_indiv	*templst;
 
-	temp = both->indiv->nbr_philo;
-	templst = both->indiv;
-	if (both->indiv->is_dead == 1)
-		return(1);
-	templst = templst->next;
-	while (templst->nbr_philo != temp)
+	temp = 1;
+	//printf("philo %d\n", );
+	while (temp != indivarray[0]->philo->nbr_philo - 1)
 	{
-		if (templst->is_dead == 1)
+		printf("temp %d\n", temp);
+		printf("max %d\n", indivarray[0]->philo->nbr_philo - 1);
+		printf("is dead %d\n", indivarray[temp]->is_dead);
+		if (indivarray[temp]->is_dead == 1)
 		{
-			while (templst->nbr_philo != temp)
-				templst = templst->next;
+			printf("ola\n");
 			return(1);
 		}
-		templst = templst->next;
+		temp++;
 	}
 	return(0);
 }

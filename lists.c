@@ -12,7 +12,7 @@
 
 #include "philosophers.h"
 
-t_indiv	*new(int i, struct timeval time_eaten, int nbr_eat)
+t_indiv	*new(int i, struct timeval time_eaten, t_philo *philo)
 {
 	t_indiv	*indiv;
 
@@ -20,7 +20,8 @@ t_indiv	*new(int i, struct timeval time_eaten, int nbr_eat)
 	indiv->nbr_philo = i;
 	indiv->time_eaten = time_eaten;
 	indiv->next = NULL;
-	indiv->nbr_eaten = nbr_eat;
+	indiv->nbr_eaten = philo->nbr_eat;
+	indiv->philo = philo;
 	indiv->is_dead = 0;
 	return (indiv);
 }
@@ -40,31 +41,34 @@ void	lstadd_back(t_indiv **lst, t_indiv *new)
 	going_to_end->next = new;
 }
 
-t_indiv	*connectthem(t_philo *philo, struct timeval teatn)
+t_indiv	**connectthem(t_both *both, struct timeval teatn)
 {
 	int		c;
 	t_indiv	*temp;
 	t_indiv	*indiv;
 
 	c = 1;
-	indiv = new(c, teatn, philo->nbr_eat);
+	indiv = new(c, teatn, both->philo);
 	temp = indiv;
-	while (c++ < philo->nbr_philo - 1)
-		lstadd_back(&indiv, new(c, teatn, philo->nbr_eat));
+	both->indivarray = malloc((both->philo->nbr_philo) * sizeof(t_indiv *));
+	while (c++ < both->philo->nbr_philo - 1)
+		lstadd_back(&indiv, new(c, teatn, both->philo));
 	while (indiv->next != NULL)
 		indiv = indiv->next;
 	indiv->next = temp;
 	indiv = temp;
 	c = 0;
-	while (indiv->nbr_philo != philo->nbr_philo - 1)
+	printf("indiv->nbr_philo %d\n", indiv->nbr_philo);
+	while (indiv->nbr_philo != both->philo->nbr_philo - 1)
 	{
-		philo->indivarray[c] = indiv;
-		c++;
+		printf("CCCCCCC %d\n", c);
+		both->indivarray[c] = indiv;
 		indiv = indiv->next;
+		c++;
 	}
-	philo->indivarray[c] = indiv;
+	both->indivarray[c] = indiv;
 	indiv = indiv->next;
-	return (indiv);
+	return (both->indivarray);
 }
 
 void	freelst(t_both *both)
@@ -73,9 +77,9 @@ void	freelst(t_both *both)
 	t_indiv	*next;
 	int		c;
 
-	if (!both->indiv)
+	if (!both->indivarray[0])
 		return ;
-	sublst = both->indiv;
+	sublst = both->indivarray[0];
 	c = -1;
 	while (++c < both->philo->nbr_philo - 1)
 	{
@@ -88,5 +92,5 @@ void	freelst(t_both *both)
 		sublst = next;
 	}
 	//pthread_detach(both->philo->thread_id[c - 1]);
-	both->indiv = NULL;
+	//both->indiv = NULL;
 }

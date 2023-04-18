@@ -27,45 +27,14 @@ long	mytime(struct timeval begin)
 	usleep(time * 1000);
 }*/
 
-/*void	sleeping(t_both *both)
+void	sleeping(t_indiv *indiv)
 {
-	printf("%ld ms %d is 😴😴😴😴\n", mytime(both->philo->begin), both->indiv->nbr_philo);
-	usleep(both->philo->tts * 1000);
+	printf("%ld ms %d is 😴😴😴😴\n", mytime(indiv->philo->begin),indiv->nbr_philo);
+	usleep(indiv->philo->tts * 1000);
 
-}*/
-
-
-/*void	eating(t_both *both)
-{
-	struct timeval now;
-
-	gettimeofday(&now, NULL);
-	// if (both->indiv->time_eaten.tv_sec - now.tv_sec > 1)
-	// {
-	// 	printf("%ld %d is 💀💀💀💀\n", time(both->philo->begin), both->indiv->nbr_philo);
-	// 	both->indiv->is_dead = 1;
-	// }
-	if (both->philo->ttd < both->indiv->time_eaten.tv_usec - now.tv_usec)
-	{
-		printf("%ld ms %d is 💀💀💀💀\n", mytime(both->philo->begin), both->indiv->nbr_philo);
-		both->indiv->is_dead = 1;
-	}
-	else
-	{
-		both->indiv->time_eaten = now;
-		both->indiv->nbr_eaten--;
-		printf("%ld ms %d is 😫🍝😫🍝\n", mytime(both->philo->begin), both->indiv->nbr_philo);
-		usleep(both->philo->tte * 1000);
-	}
-}*/
-
-void	sleeping(t_philo *p)
-{
-	printf("%ld ms %d is 😴😴😴😴\n", mytime(p->begin), p->indivarray[p->nbr]->nbr_philo);
-	usleep(p->tts * 1000);
 }
 
-void	eating(t_philo *p)
+void	eating(t_indiv *indiv)
 {
 	struct timeval now;
 
@@ -75,15 +44,16 @@ void	eating(t_philo *p)
 	// 	printf("%ld %d is 💀💀💀💀\n", time(both->philo->begin), both->indiv->nbr_philo);
 	// 	both->indiv->is_dead = 1;
 	// }
-	if (p->ttd < p->indivarray[p->nbr]->time_eaten.tv_usec - now.tv_usec)
+	if (indiv->philo->ttd < indiv->time_eaten.tv_usec - now.tv_usec)
 	{
-		printf("%ld ms %d is 💀💀💀💀\n", mytime(p->begin), p->indivarray[p->nbr]->nbr_philo);
-		p->indivarray[p->nbr]->is_dead = 1;
+		printf("%ld ms %d is 💀💀💀💀\n", mytime(indiv->philo->begin), indiv->nbr_philo);
+		indiv->is_dead = 1;
 	}
 	else
 	{
-		p->indivarray[p->nbr]->time_eaten = now;
-		p->indivarray[p->nbr]->nbr_eaten--;
-		printf("%ld ms %d is 😫🍝😫🍝\n", mytime(p->begin), p->indivarray[p->nbr]->nbr_philo);
-		usleep(p->tte * 1000);
+		indiv->time_eaten = now;
+		indiv->nbr_eaten--;
+		printf("%ld ms %d is 😫🍝😫🍝\n", mytime(indiv->philo->begin), indiv->nbr_philo);
+		usleep(indiv->philo->tte * 1000);
 	}
+}
