@@ -22,6 +22,7 @@ void	philostruct_init(t_both *both, char **argv)
 	both->philo->forks = both->philo->nbr_philo;
 	both->philo->thread_id = malloc((both->philo->nbr_philo) * sizeof(pthread_t));
 	both->philo->forkstate = malloc(both->philo->nbr_philo * sizeof(pthread_mutex_t));
+	both->philo->any_dead = 0;
 	//both->philo->indivarray = malloc((both->philo->nbr_philo) * sizeof(t_indiv *));
 
 }
@@ -34,7 +35,6 @@ void	mutex_changestate(t_indiv *indiv, char state)
 			printf("merda\n");
 		if(pthread_mutex_lock(&indiv->fork_L) != 0)
 			printf("merda\n");
-		printf("fork lock by %d\n", indiv->nbr_philo);
 	}
 	else if (state == 'u')
 	{
@@ -42,35 +42,25 @@ void	mutex_changestate(t_indiv *indiv, char state)
 			printf("merda\n");
 		if(pthread_mutex_unlock(&indiv->fork_L) != 0)
 			printf("merda\n");
-		printf("fork unlock by %d\n", indiv->nbr_philo);
 	}
 }
 
 void	*func(void *arg)
 {
-	//t_both *both;
 	t_indiv	*indiv;
-	//int	temp;
 
-	//both = (t_both *)arg;
 	indiv = (t_indiv *)arg;
-
-	//temp = both->number;
-	//printf("temp %d\n", temp);
-	//both->indiv = both->indiv->next;
-	printf("%d %d %d\n", indiv->nbr_philo, indiv->is_dead, indiv->nbr_eaten);
 	while (indiv->is_dead == 0 && indiv->nbr_eaten != 0)
 	{
-		if (any_death(&indiv) == 1 || indiv->is_dead == 1)
+		if (indiv->is_dead == 1 || indiv->philo->any_dead == 1)
 			break ;
-		printf("a fork lock by %d\n", indiv->nbr_philo);
 		mutex_changestate(indiv, 'l');
 		eating(indiv);
-		printf("a fork unlock by %d\n", indiv->nbr_philo);
 		mutex_changestate(indiv, 'u');
-		if (any_death(&indiv) == 1 || indiv->is_dead == 1)
+		if (indiv->is_dead == 1 || indiv->philo->any_dead == 1)
 			break ;
-		// sleeping(indiv);
+		sleeping(indiv);
+		thinking(indiv);
 	}
 	return (NULL);
 }
@@ -87,8 +77,6 @@ void	leftfork(t_both *both)
 	int	temp;
 
 	temp = 0;
-	/*while (both->indiv->nbr_philo != 1)
-		both->indiv = both->indiv->next;*/
 	both->indivarray[0]->fork_L = both->philo->forkstate[both->philo->nbr_philo - 2];
 }
 
@@ -131,7 +119,6 @@ int	main(int argc, char **argv)
 		temp = -1;
 		while (++temp < both.philo->nbr_philo - 1)
 		{
-			printf("nbr %d\n", both.indivarray[temp]->nbr_philo);
 			pthread_create(&both.philo->thread_id[temp], NULL, &func, both.indivarray[temp]);
 		}
 		freelst(&both);

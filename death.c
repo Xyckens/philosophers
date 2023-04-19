@@ -16,12 +16,12 @@ int	any_death(t_indiv **indivarray)
 {
 	int	temp;
 
-	temp = 1;
+	temp = 0;
 	//printf("philo %d\n", );
-	while (temp != indivarray[0]->philo->nbr_philo - 1)
+	while (indivarray[temp]->nbr_philo != indivarray[0]->philo->nbr_philo - 4)
 	{
 		printf("temp %d\n", temp);
-		printf("max %d\n", indivarray[0]->philo->nbr_philo - 1);
+		printf("max %d\n", indivarray[temp]->philo->nbr_philo - 1);
 		printf("is dead %d\n", indivarray[temp]->is_dead);
 		if (indivarray[temp]->is_dead == 1)
 		{

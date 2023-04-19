@@ -30,6 +30,7 @@ typedef struct s_philo
 	int				tts;
 	int				forks;
 	int				nbr_eat;
+	int				any_dead;
 	pthread_t		*thread_id;
 	pthread_mutex_t	*forkstate;
 	struct timeval	begin;
@@ -64,6 +65,7 @@ void	freelst(t_both *both);
 
 void	sleeping(t_indiv *indiv);
 void	eating(t_indiv *indiv);
+void	thinking(t_indiv *indiv);
 
 int		any_death(t_indiv **indiv);
 #endif

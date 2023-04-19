@@ -31,7 +31,12 @@ void	sleeping(t_indiv *indiv)
 {
 	printf("%ld ms %d is 😴😴😴😴\n", mytime(indiv->philo->begin),indiv->nbr_philo);
 	usleep(indiv->philo->tts * 1000);
+}
 
+void	thinking(t_indiv *indiv)
+{
+	printf("%ld ms %d is 🤔🤔🤔🤔\n", mytime(indiv->philo->begin),indiv->nbr_philo);
+	usleep(60 * 1000);
 }
 
 void	eating(t_indiv *indiv)
@@ -48,12 +53,22 @@ void	eating(t_indiv *indiv)
 	{
 		printf("%ld ms %d is 💀💀💀💀\n", mytime(indiv->philo->begin), indiv->nbr_philo);
 		indiv->is_dead = 1;
+		indiv->philo->any_dead = 1;
 	}
 	else
 	{
-		indiv->time_eaten = now;
 		indiv->nbr_eaten--;
 		printf("%ld ms %d is 😫🍝😫🍝\n", mytime(indiv->philo->begin), indiv->nbr_philo);
 		usleep(indiv->philo->tte * 1000);
+		indiv->time_eaten = now;
 	}
 }
+
+/*
+	if (indiv->philo->ttd < mytime(now))
+	{
+		printf("%ld ms %d is 💀💀💀💀\n", mytime(indiv->philo->begin), indiv->nbr_philo);
+		indiv->is_dead = 1;
+		indiv->philo->any_dead = 1;
+	}
+	*/
