@@ -67,16 +67,14 @@ void	*func(void *arg)
 
 void	philoindv_init(t_both *both, int pos)
 {
-	both->indivarray[pos - 1]->fork_R = both->philo->forkstate[pos];
-	if (pos != 1)
-		both->indivarray[pos - 1]->fork_L = both->philo->forkstate[pos - 1];
+	both->indivarray[pos]->fork_R = both->philo->forkstate[pos];
+	printf("funcmutex %p temp %d\n", &both->philo->forkstate[pos] , pos);
+	if (pos != 0)
+		both->indivarray[pos]->fork_L = both->philo->forkstate[pos - 1];
 }
 
 void	leftfork(t_both *both)
 {
-	int	temp;
-
-	temp = 0;
 	both->indivarray[0]->fork_L = both->philo->forkstate[both->philo->nbr_philo - 2];
 }
 
@@ -111,8 +109,10 @@ int	main(int argc, char **argv)
 		temp = -1;
 		while (++temp < both.philo->nbr_philo - 1)
 		{
+			printf("temp %d\n", temp);
 			pthread_mutex_init(&both.philo->forkstate[temp], NULL);
-			philoindv_init(&both, temp + 1);
+			printf("mutex %p temp %d\n", &both.philo->forkstate[temp], temp);
+			philoindv_init(&both, temp);
 		}
 		leftfork(&both);
 		//printcorrectindiv(both.indiv);

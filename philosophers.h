@@ -67,5 +67,7 @@ void	sleeping(t_indiv *indiv);
 void	eating(t_indiv *indiv);
 void	thinking(t_indiv *indiv);
 
+void	mutex_changestate(t_indiv *indiv, char state);
+
 int		any_death(t_indiv **indiv);
 #endif

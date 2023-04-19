@@ -66,6 +66,4 @@ void	freelst(t_both *both)
 		pthread_detach(both->philo->thread_id[c]);
 		pthread_mutex_destroy(&both->philo->forkstate[c]);
 	}
-	//pthread_detach(both->philo->thread_id[c - 1]);
-	//both->indiv = NULL;
 }
