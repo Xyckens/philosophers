@@ -64,6 +64,6 @@ void	freelst(t_both *both)
 	{
 		pthread_join(both->philo->thread_id[c], NULL);
 		pthread_detach(both->philo->thread_id[c]);
-		pthread_mutex_destroy(&both->philo->forkstate[c]);
+		pthread_mutex_destroy(both->indivarray[c]->fork_r);
 	}
 }

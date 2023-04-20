@@ -22,20 +22,15 @@ long	mytime(struct timeval begin)
 	return ((now.tv_sec * 1000) + (now.tv_usec / 1000) - begintotal);
 }
 
-/*void	msleep(int time)
-{
-	usleep(time * 1000);
-}*/
-
 void	sleeping(t_indiv *indiv)
 {
-	printf("%ld ms %d is 😴😴😴😴\n", mytime(indiv->philo->begin),indiv->nbr_philo);
+	printf("%ld ms %d is sleeping 😴\n", mytime(indiv->philo->begin), indiv->nbr_philo);
 	usleep(indiv->philo->tts * 1000);
 }
 
 void	thinking(t_indiv *indiv)
 {
-	printf("%ld ms %d is 🤔🤔🤔🤔\n", mytime(indiv->philo->begin),indiv->nbr_philo);
+	printf("%ld ms %d is thinking 🤔\n", mytime(indiv->philo->begin), indiv->nbr_philo);
 	usleep(60 * 1000);
 }
 
@@ -45,16 +40,21 @@ void	eating(t_indiv *indiv)
 
 	if (indiv->philo->ttd < mytime(indiv->time_eaten))
 	{
-		printf("%ld ms %d is 💀💀💀💀\n", mytime(indiv->philo->begin), indiv->nbr_philo);
+		printf("%ld ms %d is dieded 💀\n", mytime(indiv->philo->begin), indiv->nbr_philo);
 		indiv->is_dead = 1;
 		indiv->philo->any_dead = 1;
 	}
 	else
 	{
 		indiv->nbr_eaten--;
-		printf("%ld ms %d is 😫🍝😫🍝\n", mytime(indiv->philo->begin), indiv->nbr_philo);
+		printf("%ld ms %d is eating   🍝\n", mytime(indiv->philo->begin), indiv->nbr_philo);
 		usleep(indiv->philo->tte * 1000);
 		gettimeofday(&now, NULL);
 		indiv->time_eaten = now;
 	}
+}
+
+void	pickingfork(t_indiv *indiv)
+{
+	printf("%ld ms %d has taken a 🍴 \n", mytime(indiv->philo->begin), indiv->nbr_philo);
 }

@@ -20,27 +20,24 @@
 # include <sys/time.h>
 # include <pthread.h>
 
-
-
 typedef struct s_philo
 {
 	int				nbr_philo;
 	int				ttd;
 	int				tte;
 	int				tts;
-	int				forks;
 	int				nbr_eat;
 	int				any_dead;
 	pthread_t		*thread_id;
-	pthread_mutex_t	*forkstate;
+	pthread_mutex_t	forkstate[250];
 	struct timeval	begin;
 }				t_philo;
 
 typedef struct s_indiv
 {
 	int				nbr_philo;
-	pthread_mutex_t	fork_R;
-	pthread_mutex_t	fork_L;
+	pthread_mutex_t	*fork_r;
+	pthread_mutex_t	*fork_l;
 	t_philo			*philo;
 	struct timeval	time_eaten;
 	int				nbr_eaten;
@@ -52,13 +49,10 @@ typedef struct s_both
 {
 	t_indiv	**indivarray;
 	t_philo	*philo;
-	//t_indiv	*indiv;
-	int	nbr;
 }				t_both;
 
 int		ft_atoi(const char *nptr);
 void	printstats(t_indiv *indiv, int len);
-
 
 t_indiv	**connectthem(t_both *begin, struct timeval teatn);
 void	freelst(t_both *both);
@@ -66,6 +60,7 @@ void	freelst(t_both *both);
 void	sleeping(t_indiv *indiv);
 void	eating(t_indiv *indiv);
 void	thinking(t_indiv *indiv);
+void	pickingfork(t_indiv *indiv);
 
 void	mutex_changestate(t_indiv *indiv, char state);
 
