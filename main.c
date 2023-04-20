@@ -45,15 +45,22 @@ void	*func(void *arg)
 	indiv = (t_indiv *)arg;
 	while (indiv->is_dead == 0 && indiv->nbr_eaten != 0)
 	{
-		if (indiv->is_dead == 1 || indiv->philo->any_dead == 1)
+		if (death(indiv) == 1 || indiv->philo->any_dead == 1)
 			break ;
 		mutex_changestate(indiv, 'l');
+		if (death(indiv) == 1 || indiv->philo->any_dead == 1)
+		{
+			mutex_changestate(indiv, 'u');
+			break ;
+		}
 		eating(indiv);
 		mutex_changestate(indiv, 'u');
-		if (indiv->is_dead == 1 || indiv->philo->any_dead == 1)
+		if (death(indiv) == 1 || indiv->philo->any_dead == 1)
 			break ;
 		sleeping(indiv);
 		thinking(indiv);
+		if (death(indiv) == 1 || indiv->philo->any_dead == 1)
+			break ;
 	}
 	return (NULL);
 }

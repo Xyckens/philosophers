@@ -62,7 +62,9 @@ void	eating(t_indiv *indiv);
 void	thinking(t_indiv *indiv);
 void	pickingfork(t_indiv *indiv);
 
+long	mytime(struct timeval begin);
+
 void	mutex_changestate(t_indiv *indiv, char state);
 
-int		any_death(t_indiv **indiv);
+int		death(t_indiv *indiv);
 #endif

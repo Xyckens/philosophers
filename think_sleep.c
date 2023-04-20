@@ -31,27 +31,16 @@ void	sleeping(t_indiv *indiv)
 void	thinking(t_indiv *indiv)
 {
 	printf("%ld ms %d is thinking 🤔\n", mytime(indiv->philo->begin), indiv->nbr_philo);
-	usleep(60 * 1000);
 }
 
 void	eating(t_indiv *indiv)
 {
 	struct timeval now;
-
-	if (indiv->philo->ttd < mytime(indiv->time_eaten))
-	{
-		printf("%ld ms %d is dieded 💀\n", mytime(indiv->philo->begin), indiv->nbr_philo);
-		indiv->is_dead = 1;
-		indiv->philo->any_dead = 1;
-	}
-	else
-	{
-		indiv->nbr_eaten--;
-		printf("%ld ms %d is eating   🍝\n", mytime(indiv->philo->begin), indiv->nbr_philo);
-		usleep(indiv->philo->tte * 1000);
-		gettimeofday(&now, NULL);
-		indiv->time_eaten = now;
-	}
+	indiv->nbr_eaten--;
+	gettimeofday(&now, NULL);
+	indiv->time_eaten = now;
+	printf("%ld ms %d is eating   🍝\n", mytime(indiv->philo->begin), indiv->nbr_philo);
+	usleep(indiv->philo->tte * 1000);
 }
 
 void	pickingfork(t_indiv *indiv)
