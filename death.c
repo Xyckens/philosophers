@@ -12,14 +12,28 @@
 
 #include "philosophers.h"
 
-int	death(t_indiv *indiv)
+int	death(t_indiv *indiv, int flag)
 {
-	if (indiv->philo->ttd < mytime(indiv->time_eaten))
+	if (flag == 1)
 	{
-		printf("%ld ms %d is  dieded  💀\n", mytime(indiv->philo->begin), indiv->nbr_philo);
-		indiv->is_dead = 1;
-		indiv->philo->any_dead = 1;
+		eating(indiv);
+		mutex_changestate(indiv, 'u');
+	}
+	pthread_mutex_lock(&indiv->philo->deaths);
+	if (indiv->is_dead > 0 || indiv->philo->any_dead > 0)
+	{
+		pthread_mutex_unlock(&indiv->philo->deaths);
 		return (1);
 	}
+	else if (indiv->philo->ttd < mytime(indiv->time_eaten))
+	{
+		printf("%ld ms "
+			"%d is  dieded  💀\n", mytime(indiv->philo->begin) , indiv->nbr_philo);
+		indiv->is_dead++;
+		indiv->philo->any_dead++;
+		pthread_mutex_unlock(&indiv->philo->deaths);
+		return (1);
+	}
+	pthread_mutex_unlock(&indiv->philo->deaths);
 	return (0);
 }

@@ -40,3 +40,10 @@ int	ft_atoi(const char *nptr)
 		nb *= -1;
 	return (nb);
 }
+
+int	is_digit_or_signal(char c)
+{
+	if ((c >= '0' && c <= '9'))
+		return (1);
+	return (0);
+}

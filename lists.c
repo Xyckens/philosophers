@@ -62,8 +62,8 @@ void	freelst(t_both *both)
 	c = -1;
 	while (++c < both->philo->nbr_philo - 1)
 	{
-		pthread_join(both->philo->thread_id[c], NULL);
-		pthread_detach(both->philo->thread_id[c]);
-		pthread_mutex_destroy(both->indivarray[c]->fork_r);
+		pthread_join(both->philo->thrd[c], NULL);
+		/*pthread_detach(both->philo->thread_id[c]);
+		pthread_mutex_destroy(both->indivarray[c]->fork_r);*/
 	}
 }

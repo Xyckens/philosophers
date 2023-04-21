@@ -28,8 +28,9 @@ typedef struct s_philo
 	int				tts;
 	int				nbr_eat;
 	int				any_dead;
-	pthread_t		*thread_id;
-	pthread_mutex_t	forkstate[250];
+	pthread_t		*thrd;
+	pthread_mutex_t	forkmut[250];
+	pthread_mutex_t	deaths;
 	struct timeval	begin;
 }				t_philo;
 
@@ -52,6 +53,8 @@ typedef struct s_both
 }				t_both;
 
 int		ft_atoi(const char *nptr);
+int		is_digit_or_signal(char c);
+
 void	printstats(t_indiv *indiv, int len);
 
 t_indiv	**connectthem(t_both *begin, struct timeval teatn);
@@ -62,9 +65,11 @@ void	eating(t_indiv *indiv);
 void	thinking(t_indiv *indiv);
 void	pickingfork(t_indiv *indiv);
 
+void	mutex_changestate(t_indiv *indiv, char state);
+
 long	mytime(struct timeval begin);
 
 void	mutex_changestate(t_indiv *indiv, char state);
 
-int		death(t_indiv *indiv);
+int		death(t_indiv *indiv, int flag);
 #endif

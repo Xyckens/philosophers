@@ -12,15 +12,32 @@
 
 #include "philosophers.h"
 
-void	philostruct_init(t_both *both, char **argv)
+int	philostruct_init(t_both *both, char **argv)
 {
-	both->philo =  malloc(sizeof(t_philo));
+	int	i;
+	int	j;
+
+	i = 0;
+	while (argv[++i])
+	{
+		j = 0;
+		while (argv[i][j])
+		{
+			if (argv[i][j] == '-')
+				return (!printf("No Negative Numbers Please! 🥰🥰\n"));
+			if (!is_digit_or_signal(argv[i][j++]))
+				return (!printf("Invalid Input! 😡🤬\n"));
+		}
+	}
+	both->philo = malloc(sizeof(t_philo));
 	both->philo->nbr_philo = ft_atoi(argv[1]) + 1;
 	both->philo->ttd = ft_atoi(argv[2]);
 	both->philo->tte = ft_atoi(argv[3]);
 	both->philo->tts = ft_atoi(argv[4]);
-	both->philo->thread_id = malloc((both->philo->nbr_philo) * sizeof(pthread_t));
+	both->philo->thrd = malloc((ft_atoi(argv[1]) + 1) * sizeof(pthread_t));
+	pthread_mutex_init(&both->philo->deaths, NULL);
 	both->philo->any_dead = 0;
+	return (1);
 }
 
 void	mutex_changestate(t_indiv *indiv, char state)
@@ -43,94 +60,76 @@ void	*func(void *arg)
 	t_indiv	*indiv;
 
 	indiv = (t_indiv *)arg;
-	while (indiv->is_dead == 0 && indiv->nbr_eaten != 0)
+	while (indiv->nbr_eaten != 0)
 	{
-		if (death(indiv) == 1 || indiv->philo->any_dead == 1)
+		if (death(indiv, 0) == 1)
 			break ;
 		mutex_changestate(indiv, 'l');
-		if (death(indiv) == 1 || indiv->philo->any_dead == 1)
+		if (death(indiv, 1) == 1)
 		{
-			mutex_changestate(indiv, 'u');
 			break ;
 		}
-		eating(indiv);
-		mutex_changestate(indiv, 'u');
-		if (death(indiv) == 1 || indiv->philo->any_dead == 1)
+		//mutex_changestate(indiv, 'u');
+		if (death(indiv, 0) == 1)
 			break ;
 		sleeping(indiv);
-		thinking(indiv);
-		if (death(indiv) == 1 || indiv->philo->any_dead == 1)
+		if (death(indiv, 0) == 1)
 			break ;
+		thinking(indiv);
 	}
 	return (NULL);
 }
 
 int	main(int argc, char **argv)
 {
-	t_both both;
-	int temp;
-	struct timeval begin;
+	t_both			both;
+	int				i;
+	struct timeval	begin;
 
-	if (argc >= 5)
+	if (argc >= 5 && argc <= 6)
 	{
-		philostruct_init(&both, argv);
-		if (argc >= 6)
-			both.philo->nbr_eat = ft_atoi(argv[5]);
-		else
-			both.philo->nbr_eat = -1;
-		gettimeofday(&begin, NULL);
-		both.philo->begin = begin;
-		both.indivarray = connectthem(&both, begin);
-		temp = -1;
-		while (++temp < both.philo->nbr_philo - 1)
-		{
-			pthread_mutex_init(&both.philo->forkstate[temp], NULL);
-			both.indivarray[temp]->fork_r = &both.philo->forkstate[temp];
-			if (temp < both.philo->nbr_philo - 1)
-				both.indivarray[temp + 1]->fork_l = &both.philo->forkstate[temp];
-			if (temp + 1 == both.philo->nbr_philo - 1)
+		if (philostruct_init(&both, argv))
+		{	
+			if (argc >= 6)
+				both.philo->nbr_eat = ft_atoi(argv[5]);
+			else
+				both.philo->nbr_eat = -1;
+			gettimeofday(&begin, NULL);
+			both.philo->begin = begin;
+			both.indivarray = connectthem(&both, begin);
+			i = -1;
+			while (++i < both.philo->nbr_philo - 1)
 			{
-				both.indivarray[0]->fork_l = &both.philo->forkstate[temp];
-				both.indivarray[temp]->fork_r = &both.philo->forkstate[temp];
+				pthread_mutex_init(&both.philo->forkmut[i], NULL);
+				both.indivarray[i]->fork_r = &both.philo->forkmut[i];
+				if (i < both.philo->nbr_philo - 1)
+					both.indivarray[i + 1]->fork_l = &both.philo->forkmut[i];
+				if (i + 1 == both.philo->nbr_philo - 1)
+				{
+					both.indivarray[0]->fork_l = &both.philo->forkmut[i];
+					both.indivarray[i]->fork_l = &both.philo->forkmut[i];
+					both.indivarray[i]->fork_r = &both.philo->forkmut[i - 1];
+				}
 			}
+			i = -1;
+			while (++i < both.philo->nbr_philo)
+			{
+				pthread_mutex_init(&both.philo->forkmut[i], NULL);
+				both.indivarray[i]->fork_r = &both.philo->forkmut[i];
+				if (i < both.philo->nbr_philo - 1)
+					both.indivarray[i + 1]->fork_l = &both.philo->forkmut[i];
+				if (i + 1 == both.philo->nbr_philo - 1)
+					both.indivarray[0]->fork_l = &both.philo->forkmut[i];
+			}
+			i = -1;
+			while (++i < both.philo->nbr_philo - 1)
+				pthread_create(&both.philo->thrd[i], NULL, &func, both.indivarray[i]);
+			freelst(&both);
+			free(both.philo->thrd);
 		}
-		temp = -1;
-		while (++temp < both.philo->nbr_philo)
-		{
-			pthread_mutex_init(&both.philo->forkstate[temp], NULL);
-			both.indivarray[temp]->fork_r = &both.philo->forkstate[temp];
-			if (temp < both.philo->nbr_philo - 1)
-				both.indivarray[temp + 1]->fork_l = &both.philo->forkstate[temp];
-			if (temp + 1 == both.philo->nbr_philo - 1)
-				both.indivarray[0]->fork_l = &both.philo->forkstate[temp];
-		}
-		temp = -1;
-		while (++temp < both.philo->nbr_philo - 1)
-		{
-			pthread_create(&both.philo->thread_id[temp], NULL, &func, both.indivarray[temp]);
-		}
-		freelst(&both);
-		free(both.philo->thread_id);
 	}
 	else
-		printf("not enough args\n");
+		printf("Wrong Number of Args! 🤭🤭\n");
 	return (0);
 }
 //grab fork, eat, leave fork, sleep, think, repeat
-
-/*		
-		temp = -1;
-		while (++temp < both.philo->nbr_philo - 1)
-		{
-			pthread_mutex_init(&both.philo->forkstate[temp], NULL);
-			both.indivarray[temp]->fork_r = &both.philo->forkstate[temp];
-			if (temp < both.philo->nbr_philo - 1)
-				both.indivarray[temp + 1]->fork_l = &both.philo->forkstate[temp];
-			if (temp + 1 == both.philo->nbr_philo - 1)
-			{
-				both.indivarray[0]->fork_l = &both.philo->forkstate[temp];
-				both.indivarray[temp]->fork_r = &both.philo->forkstate[temp];
-
-			}
-		}
-		*/
