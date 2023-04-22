@@ -6,7 +6,7 @@
 #    By: fvieira <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/29 14:42:53 by fvieira           #+#    #+#              #
-#    Updated: 2023/04/15 17:45:54 by fvieira          ###   ########.fr        #
+#    Updated: 2023/04/22 22:16:33 by fvieira          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,11 +14,11 @@ NAME = philo
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=thread -g
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address
 
 SRC = main.c \
 		auxil.c \
-		think_sleep.c \
+		actions.c \
 		lists.c \
 		death.c
 

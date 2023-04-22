@@ -60,10 +60,18 @@ void	freelst(t_both *both)
 	if (!both->indivarray[0])
 		return ;
 	c = -1;
-	while (++c < both->philo->nbr_philo - 1)
+	while (both->philo->nbr_philo > 2 && ++c < both->philo->nbr_philo - 1)
 	{
 		pthread_join(both->philo->thrd[c], NULL);
-		/*pthread_detach(both->philo->thread_id[c]);
-		pthread_mutex_destroy(both->indivarray[c]->fork_r);*/
 	}
+	c = -1;
+	while (++c < both->philo->nbr_philo)
+	{
+		free(both->indivarray[c]);
+		pthread_mutex_destroy(&both->philo->forkmut[c]);
+	}
+	pthread_mutex_destroy(&both->philo->deaths);
+	free(both->indivarray);
+	free(both->philo->thrd);
+	free(both->philo);
 }

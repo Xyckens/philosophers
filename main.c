@@ -55,7 +55,7 @@ void	mutex_changestate(t_indiv *indiv, char state)
 	}
 }
 
-void	*func(void *arg)
+void	*f(void *arg)
 {
 	t_indiv	*indiv;
 
@@ -67,9 +67,11 @@ void	*func(void *arg)
 		mutex_changestate(indiv, 'l');
 		if (death(indiv, 1) == 1)
 		{
+			mutex_changestate(indiv, 'u');
 			break ;
 		}
-		//mutex_changestate(indiv, 'u');
+		eating(indiv);
+		mutex_changestate(indiv, 'u');
 		if (death(indiv, 0) == 1)
 			break ;
 		sleeping(indiv);
@@ -78,6 +80,33 @@ void	*func(void *arg)
 		thinking(indiv);
 	}
 	return (NULL);
+}
+
+void	mutexinit(t_both *both)
+{
+	int	i;
+
+	i = -1;
+	while (both->philo->nbr_philo > 2 && ++i < both->philo->nbr_philo - 1)
+	{
+		pthread_mutex_init(&both->philo->forkmut[i], NULL);
+		both->indivarray[i]->fork_r = &both->philo->forkmut[i];
+		if (i < both->philo->nbr_philo - 1)
+			both->indivarray[i + 1]->fork_l = &both->philo->forkmut[i];
+		if (i + 1 == both->philo->nbr_philo - 1)
+		{
+			both->indivarray[0]->fork_l = &both->philo->forkmut[i];
+			both->indivarray[i]->fork_l = &both->philo->forkmut[i];
+			both->indivarray[i]->fork_r = &both->philo->forkmut[i - 1];
+		}
+	}
+	if (both->philo->nbr_philo == 2)
+	{
+		pthread_mutex_init(&both->philo->forkmut[0], NULL);
+		both->indivarray[0]->fork_r = &both->philo->forkmut[0];
+		pthread_create(&both->philo->thrd[0], NULL, &d, both->indivarray[0]);
+		pthread_join(both->philo->thrd[0], NULL);
+	}
 }
 
 int	main(int argc, char **argv)
@@ -97,35 +126,11 @@ int	main(int argc, char **argv)
 			gettimeofday(&begin, NULL);
 			both.philo->begin = begin;
 			both.indivarray = connectthem(&both, begin);
+			mutexinit(&both);
 			i = -1;
-			while (++i < both.philo->nbr_philo - 1)
-			{
-				pthread_mutex_init(&both.philo->forkmut[i], NULL);
-				both.indivarray[i]->fork_r = &both.philo->forkmut[i];
-				if (i < both.philo->nbr_philo - 1)
-					both.indivarray[i + 1]->fork_l = &both.philo->forkmut[i];
-				if (i + 1 == both.philo->nbr_philo - 1)
-				{
-					both.indivarray[0]->fork_l = &both.philo->forkmut[i];
-					both.indivarray[i]->fork_l = &both.philo->forkmut[i];
-					both.indivarray[i]->fork_r = &both.philo->forkmut[i - 1];
-				}
-			}
-			i = -1;
-			while (++i < both.philo->nbr_philo)
-			{
-				pthread_mutex_init(&both.philo->forkmut[i], NULL);
-				both.indivarray[i]->fork_r = &both.philo->forkmut[i];
-				if (i < both.philo->nbr_philo - 1)
-					both.indivarray[i + 1]->fork_l = &both.philo->forkmut[i];
-				if (i + 1 == both.philo->nbr_philo - 1)
-					both.indivarray[0]->fork_l = &both.philo->forkmut[i];
-			}
-			i = -1;
-			while (++i < both.philo->nbr_philo - 1)
-				pthread_create(&both.philo->thrd[i], NULL, &func, both.indivarray[i]);
+			while (both.philo->nbr_philo > 2 && ++i < both.philo->nbr_philo - 1)
+				pthread_create(&both.philo->thrd[i], 0, &f, both.indivarray[i]);
 			freelst(&both);
-			free(both.philo->thrd);
 		}
 	}
 	else

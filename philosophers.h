@@ -72,4 +72,5 @@ long	mytime(struct timeval begin);
 void	mutex_changestate(t_indiv *indiv, char state);
 
 int		death(t_indiv *indiv, int flag);
+void	*d(void *arg);
 #endif
